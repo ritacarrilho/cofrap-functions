@@ -1,0 +1,44 @@
+provider:
+  name: openfaas
+  gateway: http://192.168.64.4:30657
+
+functions:
+  get-users:
+    lang: python3-flask
+    handler: ./get-users
+    image: ritacarrilho/get-users:latest
+    environment:
+      DB_HOST: mariadb.mariadb.svc.cluster.local
+      DB_USER: cofrap_user
+      DB_PASSWORD: cofrap-password
+      DB_NAME: cofrap_db
+
+  generate-password:
+    lang: python3-flask
+    handler: ./generate-password
+    image: ritacarrilho/generate-password:latest
+    environment:
+      DB_HOST: mariadb.mariadb.svc.cluster.local
+      DB_USER: cofrap_user
+      DB_PASSWORD: cofrap-password
+      DB_NAME: cofrap_db
+  generate-2fa:
+    lang: python3-flask
+    handler: ./generate-2fa
+    image: ritacarrilho/generate-2fa:latest
+    environment:
+      DB_HOST: mariadb.mariadb.svc.cluster.local
+      DB_USER: cofrap_user
+      DB_PASSWORD: cofrap-password
+      DB_NAME: cofrap_db
+
+  authenticate-user:
+    lang: python3-flask
+    handler: ./authenticate-user
+    image: ritacarrilho/authenticate-user:latest
+    environment:
+      DB_HOST: mariadb.mariadb.svc.cluster.local
+      DB_USER: cofrap_user
+      DB_PASSWORD: cofrap-password
+      DB_NAME: cofrap_db
+
