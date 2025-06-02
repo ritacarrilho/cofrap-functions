@@ -1,0 +1,4 @@
+pymysql
+pyotp
+qrcode
+pillow
