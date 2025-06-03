@@ -48,5 +48,5 @@ jobs:
           echo "Forçage de main vers release"
           git fetch origin main
           git checkout -B release origin/main
-          git push --force https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/ritacarrilho/cofrap-functions.git release
+          git push --force https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ secrets.GIT_USER_NAME }}/${{ secrets.GIT_NOM_REPOT }}.git release
           echo "Force push effectué avec succès"
