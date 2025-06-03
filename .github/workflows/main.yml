@@ -43,15 +43,15 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: release
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}
           fetch-depth: 0
 
       - name: Merge main -> release (force push)
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}
         run: |
           echo "Forçage de main vers release"
           git fetch origin main
           git checkout -B release origin/main
-          git push --force https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ secrets.GIT_USER_NAME }}/${{ secrets.GIT_NOM_REPOT }}.git release
+          git push --force https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}@github.com/${{ secrets.GIT_USER_NAME }}/${{ secrets.GIT_NOM_REPOT }}.git release
           echo "Force push effectué avec succès"
