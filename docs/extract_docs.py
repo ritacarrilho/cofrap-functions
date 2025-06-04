@@ -4,10 +4,10 @@ import os
 
 # Map paths to friendly function names
 paths = {
-    "generate-password/handler.py": "Generate Password",
-    # "generate-2fa/handler.py": "Generate 2FA",
-    # "authenticate-user/handler.py": "Authenticate User",
-    "faas-db-cofrap/handler.py": "DB Test Function",
+    "../generate-password/handler.py": "Generate Password",
+    "../generate-2fa/handler.py": "Generate 2FA",
+    "../authenticate-user/handler.py": "Authenticate User",
+    "../faas-db-cofrap/handler.py": "DB Test Function",
 }
 
 def extract_doc(file_path, title):

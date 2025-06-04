@@ -6,7 +6,7 @@ import pyotp
 import qrcode
 
 QR_DIR = "/var/openfaas/qrcodes"
-os.makedirs(QR_DIR, exist_ok=True)
+# os.makedirs(QR_DIR, exist_ok=True)
 
 def handle(req):
     """
@@ -82,3 +82,7 @@ def handle(req):
 
     except Exception as e:
         return json.dumps({ "error": str(e) })
+
+
+if __name__ == "__main__":
+    os.makedirs(QR_DIR, exist_ok=True)
