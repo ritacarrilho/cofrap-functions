@@ -9,6 +9,36 @@ QR_DIR = "/var/openfaas/qrcodes"
 os.makedirs(QR_DIR, exist_ok=True)
 
 def handle(req):
+    """
+    Generates a 2FA secret and QR code for a specified user, then updates the user's
+    record in the database with the encoded secret.
+
+    This function is designed to be used as a serverless OpenFaaS function. It uses 
+    `pyotp` to generate a TOTP secret and `qrcode` to produce a scannable QR code 
+    compatible with authenticator apps (like Google Authenticator or Authy).
+
+    Parameters
+    ----------
+    req : str
+        A JSON-formatted string containing the `username`.
+
+    Returns
+    -------
+    str
+        A JSON-formatted string with:
+        - `username`: the target username
+        - `raw_2fa_secret`: the generated TOTP secret in plain text
+        - `encoded_secret`: base64-encoded version of the secret (for secure storage)
+        - `qr_code_path`: path where the QR code image is saved
+        - `status`: status message ("ok" or "error")
+
+    Raises
+    ------
+    Returns an error message in JSON format if:
+        - The `username` is missing
+        - Database update fails
+        - QR code generation fails
+    """
     try:
         data = json.loads(req)
         username = data.get("username")

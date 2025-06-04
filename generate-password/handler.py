@@ -6,14 +6,61 @@ import base64
 import pymysql
 import qrcode
 
+
 QR_DIR = "/var/openfaas/qrcodes"
-os.makedirs(QR_DIR, exist_ok=True)
+# os.makedirs(QR_DIR, exist_ok=True)
 
 def generate_strong_password(length=24):
+    """
+    Generates a strong, complex password.
+
+    The password includes uppercase and lowercase letters, digits, and special characters,
+    randomly selected using `SystemRandom` for cryptographic security.
+
+    Parameters
+    ----------
+    length : int, optional
+        The desired length of the password (default is 24 characters).
+
+    Returns
+    -------
+    str
+        A randomly generated strong password string.
+    """
     chars = string.ascii_letters + string.digits + string.punctuation
     return ''.join(random.SystemRandom().choice(chars) for _ in range(length))
 
+
 def handle(req):
+    """
+    Generates a secure password for a given username, encodes it, saves it as a QR code,
+    and stores it in the MariaDB database.
+
+    If the user already exists, it updates the password and timestamp while keeping MFA untouched.
+    A QR code is generated from the raw password and saved locally for display.
+
+    Parameters
+    ----------
+    req : str
+        A JSON-formatted string containing a `username` key.
+
+    Returns
+    -------
+    str
+        A JSON-formatted response containing:
+        - `username`: the username provided
+        - `raw_password`: the unencoded password (plaintext)
+        - `encoded_password`: base64-encoded password for DB storage
+        - `qr_code_path`: local file path where the QR code was saved
+        - `status`: "ok" or error
+
+    Raises
+    ------
+    Returns a JSON error message if:
+        - Username is not provided
+        - DB connection fails
+        - QR code generation or file write fails
+    """
     try:
         data = json.loads(req)
         username = data.get("username")
@@ -53,3 +100,7 @@ def handle(req):
 
     except Exception as e:
         return json.dumps({"error": str(e)})
+
+
+if __name__ == "__main__":
+    os.makedirs(QR_DIR, exist_ok=True)

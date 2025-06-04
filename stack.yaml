@@ -22,6 +22,7 @@ functions:
       DB_USER: cofrap_user
       DB_PASSWORD: cofrap-password
       DB_NAME: cofrap_db
+
   generate-2fa:
     lang: python3-flask
     handler: ./generate-2fa
@@ -41,4 +42,3 @@ functions:
       DB_USER: cofrap_user
       DB_PASSWORD: cofrap-password
       DB_NAME: cofrap_db
-
