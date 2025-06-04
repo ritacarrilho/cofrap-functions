@@ -50,7 +50,7 @@ jobs:
       - name: Commit updated version.json on main
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}
         run: |
           git checkout main || git checkout -b main origin/main
           git add version.json
