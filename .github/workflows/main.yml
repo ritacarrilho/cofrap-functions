@@ -55,3 +55,23 @@ jobs:
           git checkout -B release origin/main
           git push --force https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}@github.com/${{ secrets.GIT_USER_NAME }}/${{ secrets.GIT_NOM_REPOT }}.git release
           echo "Force push effectué avec succès"
+
+      - name: Send Discord notification on failure
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          STEP_NAME=${{ github.job }}
+          curl -X POST -H "Content-Type: application/json" -d '{
+            "content": "<@&ROLE_ID> ❌ **Pipeline Failure - COFRAP FONCTIONS ${{ secrets.API_NAME }}**\n\n**Repository:** ${{ github.repository }}\n**Commit SHA:** ${{ github.sha }}\n**Commit Message:** ${{ github.event.head_commit.message }}\n**Failed Step:** '"${STEP_NAME}"'"
+          }' $DISCORD_WEBHOOK_URL
+     
+      - name: Send Discord release notes on success
+        if: success()
+        env:
+          DISCORD_WEBHOOK_URL_RELEASE: ${{ secrets.DISCORD_WEBHOOK_URL_RELEASE }}
+        run: |
+          VERSION=$(date +"%Y.%m.%d")-$(git rev-parse --short HEAD)
+          curl -X POST -H "Content-Type: application/json" -d '{
+            "content": "✅ **Succès Pipeline - COFRAP FONCTIONS ${{ secrets.API_NAME }}**\n\n**Version :** '"${VERSION}"'\n**Repo :** ${{ github.repository }}\n**Commit :** ${{ github.sha }}\n**Message :** ${{ github.event.head_commit.message }}\n**Branche Release :** release"
+          }' $DISCORD_WEBHOOK_URL_RELEASE
