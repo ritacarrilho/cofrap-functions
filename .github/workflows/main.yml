@@ -40,7 +40,8 @@ jobs:
     name: Update version.json
     runs-on: ubuntu-latest
     needs: build-and-test
-    
+    if: github.ref == 'refs/heads/main'
+
     steps:
       - name: Checkout repo complet
         uses: actions/checkout@v3
@@ -51,9 +52,6 @@ jobs:
         run: |
           git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
           git config --global user.name "${{ secrets.GIT_USER_NAME }}"
-
-      - name: Pull latest changes from main
-        run: git pull origin main
 
       - name: Update version dans version.json
         run: |
@@ -66,11 +64,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}
         run: |
-          git checkout main || git checkout -b main origin/main
           git add version.json
           VERSION=$(date +"%Y.%m.%d")-$(git rev-parse --short HEAD)
           git commit -m "Update version to $VERSION [skip ci]" || echo "Aucun changement à commettre"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}@github.com/${{ github.repository }} main
+          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}@github.com/${{ github.repository }}.git main
 
   release:
     name: Release & Notify
@@ -97,7 +94,7 @@ jobs:
           echo "Forçage de main vers release"
           git fetch origin main
           git checkout -B release origin/main
-          git push --force https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}@github.com/${{ secrets.GIT_USER_NAME }}/${{ secrets.GIT_NOM_REPOT }}.git release
+          git push --force https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}@github.com/${{ github.repository }}.git release
 
       - name: Send Discord notification on failure
         if: failure()
