@@ -39,6 +39,26 @@ jobs:
       - name: Dépendances installées pour toutes les fonctions
         run: echo "Installation terminée"
         
+      - name: Update version in files on main
+        if: success()
+        run: |
+          VERSION=$(date +"%Y.%m.%d")-$(git rev-parse --short HEAD)
+          echo "Updating version to $VERSION"
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" version.json
+        continue-on-error: true
+
+      - name: Commit updated version.json on main
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          git checkout main || git checkout -b main origin/main
+          git add version.json
+          VERSION=$(date +"%Y.%m.%d")-$(git rev-parse --short HEAD)
+          echo "Updating version to $VERSION"
+          git commit -m "Update version to $VERSION [skip ci]"
+          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} main
+          
       - name: Checkout branche release avec token
         uses: actions/checkout@v3
         with:
