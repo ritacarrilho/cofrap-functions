@@ -68,29 +68,29 @@ jobs:
       - name: Commit updated version.json on main
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}
         run: |
           git checkout main || git checkout -b main origin/main
           git add version.json
           VERSION=$(date +"%Y.%m.%d")-$(git rev-parse --short HEAD)
           echo "Updating version to $VERSION"
           git commit -m "Update version to $VERSION [skip ci]"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} main
+          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}@github.com/${{ github.repository }} main
 
       - name: Checkout release branch with token
         if: success()
         uses: actions/checkout@v3
         with:
           ref: release
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}
 
       - name: Merge main into release
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}
         run: |
           git fetch origin main
           git checkout -B release origin/main
-          git push --force https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} release
+          git push --force https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN_MSPR }}@github.com/${{ github.repository }} release
 
       - name: Send Discord notification on failure
         if: failure()
