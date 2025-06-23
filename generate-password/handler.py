@@ -8,6 +8,8 @@ import qrcode
 import io
 from flask import request, make_response
 
+# TODO: save user only once if it already exists
+
 QR_DIR = "/home/app/qrcodes"
 os.makedirs(QR_DIR, exist_ok=True)
 
@@ -16,62 +18,81 @@ def generate_strong_password(length=24):
     return ''.join(random.SystemRandom().choice(chars) for _ in range(length))
 
 def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Origin"]  = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-    response.headers["Access-Control-Max-Age"] = "3600"
+    response.headers["Access-Control-Max-Age"]       = "3600"
     return response
 
-
 def handle(req):
+    # Handle CORS preflight
     if request.method == "OPTIONS":
-        response = make_response('', 204)  # No Content
-        return add_cors_headers(response)
+        return add_cors_headers(make_response('', 204))
 
     try:
-        data = json.loads(req)
-        username = data.get("username")
+        data     = json.loads(req)
+        username = data.get("username") or ""
         if not username:
-            return add_cors_headers(make_response(json.dumps({"error": "username is required"}), 400))
+            return add_cors_headers(
+                make_response(json.dumps({
+                    "status": "error",
+                    "message": "username is required"
+                }), 400)
+            )
 
-        password = generate_strong_password()
-        encoded_password = base64.b64encode(password.encode()).decode()
+        conn   = pymysql.connect(
+            host     = os.environ['DB_HOST'],
+            user     = os.environ['DB_USER'],
+            password = os.environ['DB_PASSWORD'],
+            database = os.environ['DB_NAME']
+        )
+        cursor = conn.cursor()
 
-        # Generate QR code and save it
-        img = qrcode.make(password)
-        qr_path = f"{QR_DIR}/{username}_2fa_qr.png"
+        cursor.execute("SELECT 1 FROM users WHERE username = %s", (username,))
+        exists = cursor.fetchone() is not None
+
+        raw_pass     = generate_strong_password()
+        encoded_pass = base64.b64encode(raw_pass.encode()).decode()
+
+        img      = qrcode.make(raw_pass)
+        qr_path  = f"{QR_DIR}/{username}_pwd_qr.png"
         img.save(qr_path)
 
-        # Encode QR code as base64
-        buffered = io.BytesIO()
-        img.save(buffered, format="PNG")
-        qr_code_base64 = base64.b64encode(buffered.getvalue()).decode()
+        if exists:
+            cursor.execute("""
+                UPDATE users
+                   SET password = %s,
+                       gendate  = UNIX_TIMESTAMP(),
+                       expired  = 0
+                 WHERE username = %s
+            """, (encoded_pass, username))
 
-        # Save password to DB
-        connection = pymysql.connect(
-            host=os.environ['DB_HOST'],
-            user=os.environ['DB_USER'],
-            password=os.environ['DB_PASSWORD'],
-            database=os.environ['DB_NAME']
-        )
+        else:
+            cursor.execute("""
+                INSERT INTO users
+                    (username, password, mfa, gendate, expired)
+                VALUES
+                    (%s, %s, '', UNIX_TIMESTAMP(), 0)
+            """, (username, encoded_pass))
 
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                    INSERT INTO users (username, password, mfa, gendate, expired)
-                    VALUES (%s, %s, '', UNIX_TIMESTAMP(), 0)
-                    ON DUPLICATE KEY UPDATE password=%s, gendate=UNIX_TIMESTAMP(), expired=0
-                """, (username, encoded_password, encoded_password))
-            connection.commit()
+        conn.commit()
+        cursor.close()
+        conn.close()
 
-        payload = {
-            "username": username,
-            "qr_code_base64": qr_code_base64,
-            "status": "ok"
+        buf         = io.BytesIO()
+        img.save(buf, format="PNG")
+        qr_b64      = base64.b64encode(buf.getvalue()).decode()
+        payload     = {
+            "status"           : "ok",
+            "qr_code_base64"   : qr_b64
         }
-
-        response = make_response(json.dumps(payload), 200)
-        return add_cors_headers(response)
+        resp = make_response(json.dumps(payload), 200)
+        return add_cors_headers(resp)
 
     except Exception as e:
-        return add_cors_headers(make_response(json.dumps({"error": str(e)}), 500))
+        return add_cors_headers(
+            make_response(json.dumps({
+                "status": "error",
+                "message": str(e)
+            }), 500)
+        )
