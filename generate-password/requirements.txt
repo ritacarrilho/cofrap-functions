@@ -1,3 +1,5 @@
 pymysql
 qrcode
 pillow
+flask
+flask-cors

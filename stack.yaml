@@ -1,6 +1,6 @@
 provider:
   name: openfaas
-  gateway: http://192.168.64.4:30657
+  gateway: http://192.168.64.6:31112
 
 functions:
   get-users:
@@ -8,7 +8,7 @@ functions:
     handler: ./get-users
     image: ritacarrilho/get-users:latest
     environment:
-      DB_HOST: mariadb.mariadb.svc.cluster.local
+      DB_HOST: mariadb.default.svc.cluster.local
       DB_USER: cofrap_user
       DB_PASSWORD: cofrap-password
       DB_NAME: cofrap_db
@@ -18,7 +18,7 @@ functions:
     handler: ./generate-password
     image: ritacarrilho/generate-password:latest
     environment:
-      DB_HOST: mariadb.mariadb.svc.cluster.local
+      DB_HOST: mariadb.default.svc.cluster.local
       DB_USER: cofrap_user
       DB_PASSWORD: cofrap-password
       DB_NAME: cofrap_db
@@ -28,7 +28,7 @@ functions:
     handler: ./generate-2fa
     image: ritacarrilho/generate-2fa:latest
     environment:
-      DB_HOST: mariadb.mariadb.svc.cluster.local
+      DB_HOST: mariadb.default.svc.cluster.local
       DB_USER: cofrap_user
       DB_PASSWORD: cofrap-password
       DB_NAME: cofrap_db
@@ -38,7 +38,7 @@ functions:
     handler: ./authenticate-user
     image: ritacarrilho/authenticate-user:latest
     environment:
-      DB_HOST: mariadb.mariadb.svc.cluster.local
+      DB_HOST: mariadb.default.svc.cluster.local
       DB_USER: cofrap_user
       DB_PASSWORD: cofrap-password
       DB_NAME: cofrap_db

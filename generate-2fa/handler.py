@@ -5,8 +5,8 @@ import pymysql
 import pyotp
 import qrcode
 
-QR_DIR = "/var/openfaas/qrcodes"
-# os.makedirs(QR_DIR, exist_ok=True)
+QR_DIR = "/home/app/qrcodes"
+os.makedirs(QR_DIR, exist_ok=True)
 
 def handle(req):
     """
@@ -84,5 +84,5 @@ def handle(req):
         return json.dumps({ "error": str(e) })
 
 
-if __name__ == "__main__":
-    os.makedirs(QR_DIR, exist_ok=True)
+# if __name__ == "__main__":
+#     os.makedirs(QR_DIR, exist_ok=True)

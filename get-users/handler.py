@@ -2,7 +2,7 @@ import pymysql
 import json
 import os
 
-def handle():
+def handle(req):
     """
     Retrieves all user entries from the `users` table in the MariaDB database.
 

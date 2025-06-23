@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS cofrap_db
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+  
 USE cofrap_db;
 
 CREATE TABLE IF NOT EXISTS users (

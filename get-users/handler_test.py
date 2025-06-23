@@ -1,4 +1,4 @@
-from .handler import handle
+from handler import handle
 
 # Test your handler here
 

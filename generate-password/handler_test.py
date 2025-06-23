@@ -1,10 +1,13 @@
-from .handler import handle
+import json
+from handler import handle
 
-# Test your handler here
-
-# To disable testing, you can set the build_arg `TEST_ENABLED=false` on the CLI or in your stack.yml
-# https://docs.openfaas.com/reference/yaml/#function-build-args-build-args
 
 def test_handle():
-    # assert handle("input") == "input"
-    pass
+    request = json.dumps({"username": "john.doe"})
+    response = handle(request)
+    data = json.loads(response)
+
+    assert data["status"] == "ok"
+    assert "raw_password" in data
+    assert "encoded_password" in data
+    assert data["qr_code_path"].endswith(".png")
