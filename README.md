@@ -1,5 +1,5 @@
 # COFRAP
-Application Python pour COFRAP (Comité de Formation Professionnel) fonctions.
+Application Python pour COFRAP (Comité de Formation Professionnel).
 
 ## 🛠️ Prérequis
 Ce projet nécessite Python 3.7 ou supérieur.
