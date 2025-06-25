@@ -120,6 +120,24 @@ Ce projet regroupe plusieurs fonctions **OpenFaaS** dédiées à la gestion séc
 ```
 
 
+## Testes
+Lancer les testes avec la commande 
+```bash
+pytest test/<nom_du_teste>.py
+```
+
+### `generate-password`
+![screenshot](images/test_generate_password.png)
+
+### `generate-2fa`
+![screenshot](images/test_generate_2fa.png)
+
+### `authenticate-user`
+![screenshot](images/test_auth_user.png)
+
+### `get-users`
+![screenshot](images/test_get_users.png)
+
 ## Déploiement
 Necessaire de configurer  les variables d’environnement suivantes pour chaque fonction :
 - DB_HOST
