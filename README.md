@@ -16,7 +16,6 @@ bash```
 python XXXXX.py
 ```
 ## Structure du projet
-Information sur la structure du projet.
 
 bash```
 ├── .github/
