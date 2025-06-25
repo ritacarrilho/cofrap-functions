@@ -25,6 +25,41 @@ def add_cors_headers(response):
     return response
 
 def handle(req):
+    """
+    Generate a strong password for a user, store it in the database (encoded),
+    and return a QR code representing the password in base64 format.
+
+    This function handles CORS preflight requests and JSON POST requests with a `username`.
+    If the user already exists, their password is updated; otherwise, a new user is created.
+
+    Parameters
+    ----------
+    req : str
+        A JSON-formatted string with the field:
+        - `username` (str): the username for which to generate or update a password.
+
+    Returns
+    -------
+    JSON response
+        If successful:
+        {
+            "status": "ok",
+            "qr_code_base64": "<base64-encoded QR code PNG for the password>"
+        }
+
+        If error:
+        {
+            "status": "error",
+            "message": "<error message>"
+        }
+
+    Notes
+    -----
+    - A strong password is randomly generated using letters, digits, and punctuation.
+    - The password is encoded in Base64 and stored in the `password` field of the `users` table.
+    - The QR code is saved to `QR_DIR/<username>_pwd_qr.png` and returned as a base64 string.
+    - The function supports updating an existing user or creating a new one.
+    """
     # Handle CORS preflight
     if request.method == "OPTIONS":
         return add_cors_headers(make_response('', 204))
