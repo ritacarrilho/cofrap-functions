@@ -18,6 +18,7 @@ python XXXXX.py
 ## Structure du projet
 
 bash```
+.
 ├── .github/
 │   └── workflows/
 │       └── main.yml                # Fichier de workflow GitHub Actions
