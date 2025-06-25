@@ -12,9 +12,8 @@ bash```
 pip install -r requirements.txt
 ```
 ## Lancer le projet
-bash```
 python XXXXX.py
-``
+
 ## Structure du projet
 
 bash```
