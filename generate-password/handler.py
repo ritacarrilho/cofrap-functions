@@ -8,8 +8,6 @@ import qrcode
 import io
 from flask import request, make_response
 
-# TODO: save user only once if it already exists
-
 QR_DIR = "/home/app/qrcodes"
 os.makedirs(QR_DIR, exist_ok=True)
 

@@ -98,7 +98,7 @@ def mark_expired(username):
         connection.commit()
 
 
-def authenticate_user(username, password, otp_code):
+def authenticate_user(username, password, otp_code, status):
     """
     Authenticate a user by checking their password and TOTP 2FA code.
 
@@ -160,12 +160,12 @@ def handle(req):
         data = json.loads(req)
         username = data.get("username")
         password = data.get("password")
-        otp_code = data.get("2fa_code")
+        otp_code = data.get("otp_code")
 
         if not username or not password or not otp_code:
             return json.dumps({"status": "error", "message": "Missing parameters"})
 
-        result = authenticate_user(username, password, otp_code)
+        result = authenticate_user(username, password, otp_code, status="success")
         return json.dumps(result)
 
     except Exception as e:
