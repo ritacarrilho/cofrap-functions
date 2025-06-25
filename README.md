@@ -8,9 +8,6 @@ Ce projet nécessite Python 3.7 ou supérieur.
 ```
 pip install -r requirements.txt
 ```
-```
-pip install -r requirements.txt
-```
 ## Lancer le projet
 ```python XXXXX.py```
 
