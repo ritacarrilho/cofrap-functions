@@ -1,88 +1,187 @@
 # Generate Password
 
+## `add_cors_headers`
+
+No docstring found.
+
+---
+
 ## `generate_strong_password`
 
-Generates a strong, complex password.
-
-The password includes uppercase and lowercase letters, digits, and special characters,
-randomly selected using `SystemRandom` for cryptographic security.
-
-Parameters
-----------
-length : int, optional
-    The desired length of the password (default is 24 characters).
-
-Returns
--------
-str
-    A randomly generated strong password string.
+No docstring found.
 
 ---
 
 ## `handle`
 
-Generates a secure password for a given username, encodes it, saves it as a QR code,
-and stores it in the MariaDB database.
+Generate a strong password for a user, store it in the database (encoded),
+and return a QR code representing the password in base64 format.
 
-If the user already exists, it updates the password and timestamp while keeping MFA untouched.
-A QR code is generated from the raw password and saved locally for display.
+This function handles CORS preflight requests and JSON POST requests with a `username`.
+If the user already exists, their password is updated; otherwise, a new user is created.
 
 Parameters
 ----------
 req : str
-    A JSON-formatted string containing a `username` key.
+    A JSON-formatted string with the field:
+    - `username` (str): the username for which to generate or update a password.
 
 Returns
 -------
-str
-    A JSON-formatted response containing:
-    - `username`: the username provided
-    - `raw_password`: the unencoded password (plaintext)
-    - `encoded_password`: base64-encoded password for DB storage
-    - `qr_code_path`: local file path where the QR code was saved
-    - `status`: "ok" or error
+JSON response
+    If successful:
+    {
+        "status": "ok",
+        "qr_code_base64": "<base64-encoded QR code PNG for the password>"
+    }
 
-Raises
-------
-Returns a JSON error message if:
-    - Username is not provided
-    - DB connection fails
-    - QR code generation or file write fails
+    If error:
+    {
+        "status": "error",
+        "message": "<error message>"
+    }
+
+Notes
+-----
+- A strong password is randomly generated using letters, digits, and punctuation.
+- The password is encoded in Base64 and stored in the `password` field of the `users` table.
+- The QR code is saved to `QR_DIR/<username>_pwd_qr.png` and returned as a base64 string.
+- The function supports updating an existing user or creating a new one.
+
+---
+
+## `make_response`
+
+Sometimes it is necessary to set additional headers in a view.  Because
+views do not have to return response objects but can return a value that
+is converted into a response object by Flask itself, it becomes tricky to
+add headers to it.  This function can be called instead of using a return
+and you will get a response object which you can use to attach headers.
+
+If view looked like this and you want to add a new header::
+
+    def index():
+        return render_template('index.html', foo=42)
+
+You can now do something like this::
+
+    def index():
+        response = make_response(render_template('index.html', foo=42))
+        response.headers['X-Parachutes'] = 'parachutes are cool'
+        return response
+
+This function accepts the very same arguments you can return from a
+view function.  This for example creates a response with a 404 error
+code::
+
+    response = make_response(render_template('not_found.html'), 404)
+
+The other use case of this function is to force the return value of a
+view function into a response which is helpful with view
+decorators::
+
+    response = make_response(view_function())
+    response.headers['X-Parachutes'] = 'parachutes are cool'
+
+Internally this function does the following things:
+
+-   if no arguments are passed, it creates a new response argument
+-   if one argument is passed, :meth:`flask.Flask.make_response`
+    is invoked with it.
+-   if more than one argument is passed, the arguments are passed
+    to the :meth:`flask.Flask.make_response` function as tuple.
+
+.. versionadded:: 0.6
 
 ---
 
 # Generate 2FA
 
+## `add_cors_headers`
+
+No docstring found.
+
+---
+
 ## `handle`
 
-Generates a 2FA secret and QR code for a specified user, then updates the user's
-record in the database with the encoded secret.
+Generate a TOTP-based MFA secret for a user, encode it as a QR code,
+store the Base64-encoded secret in the database, and return the QR code as base64.
 
-This function is designed to be used as a serverless OpenFaaS function. It uses 
-`pyotp` to generate a TOTP secret and `qrcode` to produce a scannable QR code 
-compatible with authenticator apps (like Google Authenticator or Authy).
+This function handles CORS preflight requests and JSON POST requests with a `username`.
 
 Parameters
 ----------
 req : str
-    A JSON-formatted string containing the `username`.
+    A JSON-formatted string with the field:
+    - `username` (str): the username for whom the MFA secret is generated.
 
 Returns
 -------
-str
-    A JSON-formatted string with:
-    - `username`: the target username
-    - `raw_2fa_secret`: the generated TOTP secret in plain text
-    - `encoded_secret`: base64-encoded version of the secret (for secure storage)
-    - `qr_code_path`: path where the QR code image is saved
-    - `status`: status message ("ok" or "error")
+JSON response
+    If successful:
+    {
+        "code_mfa": "<base64-encoded QR code PNG>",
+        "status": "ok"
+    }
 
-Raises
-------
-Returns an error message in JSON format if:
-    - The `username` is missing
-    - Database update fails
-    - QR code generation fails
+    If error:
+    {
+        "status": "error",
+        "message": "<error details>"
+    }
+
+Notes
+-----
+- The TOTP secret is generated using `pyotp.random_base32()`
+- The Base64-encoded secret is saved in the `mfa` field of the `users` table
+- The QR code is saved locally as a PNG file at `QR_DIR/<username>_2fa.png`
+- The QR code can be scanned by authenticator apps like Google Authenticator
+
+---
+
+## `make_response`
+
+Sometimes it is necessary to set additional headers in a view.  Because
+views do not have to return response objects but can return a value that
+is converted into a response object by Flask itself, it becomes tricky to
+add headers to it.  This function can be called instead of using a return
+and you will get a response object which you can use to attach headers.
+
+If view looked like this and you want to add a new header::
+
+    def index():
+        return render_template('index.html', foo=42)
+
+You can now do something like this::
+
+    def index():
+        response = make_response(render_template('index.html', foo=42))
+        response.headers['X-Parachutes'] = 'parachutes are cool'
+        return response
+
+This function accepts the very same arguments you can return from a
+view function.  This for example creates a response with a 404 error
+code::
+
+    response = make_response(render_template('not_found.html'), 404)
+
+The other use case of this function is to force the return value of a
+view function into a response which is helpful with view
+decorators::
+
+    response = make_response(view_function())
+    response.headers['X-Parachutes'] = 'parachutes are cool'
+
+Internally this function does the following things:
+
+-   if no arguments are passed, it creates a new response argument
+-   if one argument is passed, :meth:`flask.Flask.make_response`
+    is invoked with it.
+-   if more than one argument is passed, the arguments are passed
+    to the :meth:`flask.Flask.make_response` function as tuple.
+
+.. versionadded:: 0.6
 
 ---
 
@@ -196,21 +295,27 @@ username : str
 
 ---
 
-# DB Test Function
+# Get all users Function
 
 ## `handle`
 
-Connects to the MariaDB database and retrieves the current timestamp.
+Retrieves all user entries from the `users` table in the MariaDB database.
 
-This function is designed to be used as a serverless function in OpenFaaS.
-It connects to the database using environment variables for credentials,
-executes a simple SELECT query to get the current time, and returns a confirmation message.
+This function connects to the database using credentials provided in environment variables.
+It fetches all rows from the `users` table and returns them as a JSON-formatted string.
+It uses `DictCursor` to ensure that each row is returned as a dictionary.
 
 Returns
 -------
 str
-    A string confirming the successful database connection and the current time,
-    or an error message in case of failure.
+    A JSON-formatted string representing a list of users with all their fields.
+    If an error occurs (e.g., connection failure, SQL error), a JSON object with an "error" message is returned.
+
+Notes
+-----
+- The function assumes the table `users` exists and contains the expected schema.
+- Ensure that the environment variables `DB_HOST`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` are set.
+- This function is useful for debugging or admin purposes and should be secured in a real-world deployment.
 
 ---
 
