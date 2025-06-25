@@ -1,3 +1,4 @@
 template
 build
 .secrets
+.pytest_cache
