@@ -16,9 +16,7 @@ python XXXXX.py
 
 ## Structure du projet
 
-bash```
-.
-├── .github/
+bash``` ├── .github/
 │   └── workflows/
 │       └── main.yml                # Fichier de workflow GitHub Actions
 ├── authenticate-user/              # Dossier pour la fonction d'authentification
@@ -34,8 +32,7 @@ bash```
 ├── faas-db-cofrap.yml              # Définition de la fonction faas-db-cofrap
 ├── stack.yaml                      # Définition de la stack OpenFaaS (ou similaire)
 ├── test.py                         # Script de test (authentification ici)
-├── version.json                    # Fichier de versionnage du projet
-```
+├── version.json                    # Fichier de versionnage du projet```
 ## Tests
 ...
  
