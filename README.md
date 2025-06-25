@@ -1,7 +1,7 @@
 # COFRAP
 Application Python pour COFRAP (Comité de Formation Professionnel).
 
-## 🛠️ Prérequis
+## Prérequis
 Ce projet nécessite Python 3.7 ou supérieur.
 
 ### **Dépendances** :
@@ -16,7 +16,7 @@ pip install -r requirements.txt
 bash```
 python XXXXX.py
 ```
-## 📁 Structure du projet
+## Structure du projet
 ...
 
 ## Tests
