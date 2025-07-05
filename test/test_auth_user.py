@@ -3,7 +3,6 @@ import os
 import sys
 import time
 import pytest
-import json
 from unittest import mock
 
 # Define the path to the authenticate-user handler
@@ -17,11 +16,10 @@ spec.loader.exec_module(authenticate_user)
 
 # ---------------------- TEST ----------------------
 
-def test_decode_b64():
 
+def test_decode_b64():
     original = "my_secure_value"
     encoded = "bXlfc2VjdXJlX3ZhbHVl" 
-
     result = authenticate_user.decode_b64(encoded)
     assert result == original
 

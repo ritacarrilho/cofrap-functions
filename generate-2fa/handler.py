@@ -10,12 +10,14 @@ from flask import make_response
 QR_DIR = "/home/app/qrcodes"
 os.makedirs(QR_DIR, exist_ok=True)
 
+
 def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"]  = "*"
+    response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-    response.headers["Access-Control-Max-Age"]       = "3600"
+    response.headers["Access-Control-Max-Age"] = "3600"
     return response
+
 
 def handle(req):
     """
@@ -56,7 +58,7 @@ def handle(req):
         return add_cors_headers(make_response("", 204))
 
     try:
-        payload  = json.loads(req)
+        payload = json.loads(req)
         username = payload.get("username") or ""
         if not username:
             resp = make_response(json.dumps({
@@ -65,9 +67,9 @@ def handle(req):
             }), 400)
             return add_cors_headers(resp)
 
-        secret   = pyotp.random_base32()
-        totp     = pyotp.TOTP(secret, digits=6)
-        code_2fa = totp.now()               
+        secret = pyotp.random_base32()
+        totp = pyotp.TOTP(secret, digits=6)
+        # code_2fa = totp.now()
 
         uri = totp.provisioning_uri(name=username, issuer_name="Cofrap")
         img = qrcode.make(uri)
@@ -75,15 +77,15 @@ def handle(req):
         img.save(qr_path)
 
         encoded_secret = base64.b64encode(secret.encode()).decode()
-        buf            = io.BytesIO()
+        buf = io.BytesIO()
         img.save(buf, format="PNG")
-        qr_b64         = base64.b64encode(buf.getvalue()).decode()
+        qr_b64 = base64.b64encode(buf.getvalue()).decode()
 
         conn = pymysql.connect(
-            host     = os.environ['DB_HOST'],
-            user     = os.environ['DB_USER'],
-            password = os.environ['DB_PASSWORD'],
-            database = os.environ['DB_NAME']
+            host=os.environ['DB_HOST'],
+            user=os.environ['DB_USER'],
+            password=os.environ['DB_PASSWORD'],
+            database=os.environ['DB_NAME']
         )
         with conn:
             with conn.cursor() as cur:
@@ -95,8 +97,8 @@ def handle(req):
             conn.commit()
 
         resp_body = {
-            "code_mfa"    : qr_b64,
-            "status"      : "ok"
+            "code_mfa": qr_b64,
+            "status": "ok"
         }
         resp = make_response(json.dumps(resp_body), 200)
         return add_cors_headers(resp)

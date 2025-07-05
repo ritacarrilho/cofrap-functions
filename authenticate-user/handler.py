@@ -8,9 +8,9 @@ import time
 
 def get_db_connection():
     """
-    Establish a connection to the MariaDB database using credentials 
+    Establish a connection to the MariaDB database using credentials
     and host information from environment variables.
-    
+
     Returns
     -------
     pymysql.Connection
@@ -39,7 +39,6 @@ def decode_b64(value):
         The decoded plaintext string.
     """
     return base64.b64decode(value.encode()).decode()
-
 
 
 def is_expired(gendate_timestamp):
@@ -143,7 +142,7 @@ def authenticate_user(username, password, otp_code):
 
 def handle(req):
     """
-    OpenFaaS entry point function that handles a JSON request containing 
+    OpenFaaS entry point function that handles a JSON request containing
     username, password, and TOTP code.
 
     Parameters
