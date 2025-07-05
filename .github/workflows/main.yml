@@ -33,8 +33,16 @@ jobs:
             pip install -r "$dir/requirements.txt"
           done
 
+      - name: Installer pytest et dépendances de test
+        run: |
+          pip install -r test/requirements.txt
+          pip install pytest
+
+      - name: Lancer les tests avec pytest
+        run: pytest test/
+
       - name: Dépendances installées
-        run: echo "Installation terminée"
+        run: echo "Installation et tests terminés"
 
   release:
     name: Release and Notify
