@@ -45,7 +45,7 @@ jobs:
         run: pip install flake8
 
       - name: Lancer linter 
-        run: lake8 authenticate-user/ generate-password/ generate-2fa/ --max-line-length=155
+        run: python -m lake8 authenticate-user/ generate-password/ generate-2fa/ --max-line-length=155
 
       - name: Dépendances installées
         run: echo "Installation et tests terminés"
