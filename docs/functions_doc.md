@@ -1,17 +1,5 @@
 # Generate Password
 
-## `add_cors_headers`
-
-No docstring found.
-
----
-
-## `generate_strong_password`
-
-No docstring found.
-
----
-
 ## `handle`
 
 Generate a strong password for a user, store it in the database (encoded),
@@ -96,12 +84,6 @@ Internally this function does the following things:
 ---
 
 # Generate 2FA
-
-## `add_cors_headers`
-
-No docstring found.
-
----
 
 ## `handle`
 
